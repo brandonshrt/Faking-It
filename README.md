@@ -45,7 +45,7 @@ Faking It is a game where players compete to find out who is lying, based on the
 - **Faker**: Fake it convincingly  
   Example: *"Who here would need help paying rent?"* → “Probably Alex”
 
-**Twist**: The Faker **chooses a real player’s name** and needs to convince the group that they picked that person for the actual question
+**Faker's Goal**: **Chooses a player’s name** and needs to convince the group that they picked that person for the actual question
 
 ---
 
