@@ -51,10 +51,16 @@ p {
     cursor: pointer;
     margin: 10px;
     font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
 .button:hover {
     background-color: #00a8cc;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.button:active {
+    background-color: #009fbb;
 }
 
 .button-container {
