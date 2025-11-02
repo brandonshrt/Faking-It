@@ -1,0 +1,139 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e;
+    color: white;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #16213e;
+    padding: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 30px;
+    font-size: 18px;
+}
+
+nav a:hover {
+    color: #00d4ff;
+}
+
+/* Main Content */
+.container {
+    padding: 50px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 20px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Buttons */
+.button {
+    background-color: #00d4ff;
+    color: #1a1a2e;
+    padding: 15px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: #00a8cc;
+}
+
+.button-container {
+    margin-top: 40px;
+}
+
+/* Avatar Selection Page */
+.name-input-section {
+    margin: 30px auto;
+    max-width: 400px;
+}
+
+.name-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 18px;
+    border: 2px solid #00d4ff;
+    border-radius: 10px;
+    background-color: #16213e;
+    color: white;
+    text-align: center;
+}
+
+.name-input:focus {
+    outline: none;
+    border-color: #00a8cc;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 20px;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.avatar-option {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.avatar-option:hover {
+    transform: scale(1.1);
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #16213e;
+    border: 3px solid #2a3f5f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto;
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.avatar-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.avatar-option.selected .avatar-circle {
+    border-color: #00d4ff;
+    background-color: #1e3a5f;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.button:disabled:hover {
+    background-color: #555;
+}
