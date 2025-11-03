@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faking It - Home</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+    </nav>
+
+    <!-- Home Page -->
+    <div class="container">
+        <h1>Faking It</h1>
+        <p>Welcome to Faking It! A fun multiplayer word game.</p>
+
+        <div class="button-container">
+            <button class="button" onclick="createGame()">Create Game</button>
+            <button class="button" onclick="goToJoin()">Join Game</button>
+          </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../scripts/script.js"></script>
+</body>
+</html>
