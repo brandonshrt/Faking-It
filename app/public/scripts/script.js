@@ -7,7 +7,7 @@ function createGame() {
 }
 
 function goToJoin() {
-    window.location.href = "join.html";
+    window.location.href = "/pages/join.html";
 }
 
 // Join existing game
@@ -19,7 +19,8 @@ function joinGame() {
 
 // Receive game creation confirmation
 socket.on("gameCreated", ({ code }) => {
-  console.log("Game created:", code);
+  localStorage.setItem("gameCode", code);
+  //console.log("Game created:", code);
   // Redirect to setup page with game code
   window.location.href = "/pages/join.html";
   window.location.href = `/pages/setup.html?code=${code}`;
