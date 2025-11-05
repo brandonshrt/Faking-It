@@ -143,3 +143,44 @@ p {
 .button:disabled:hover {
     background-color: #555;
 }
+
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem auto;
+    max-width: 600px;
+  }
+  
+  .player-card {
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    text-align: center;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .player-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .player-card.empty-card {
+    background-color: #222;
+    opacity: 0.5;
+  }
+  
+  .avatar-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .player-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+  }
