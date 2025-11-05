@@ -68,6 +68,18 @@ io.on("connection", (socket) => {
     else socket.emit("errorMessage", "Invalid or already started game.");
   });
 
+  // Display lobby logic
+  socket.on("joinLobby", ({ code }) => {
+    const game = games[code];
+    if (!game) return socket.emit("errorMessage", "Lobby not found.");
+    
+    // Join the socket to the room so it gets future updates too
+    socket.join(code);
+    
+    // Send the current player list only to this client
+    socket.emit("lobbyState", game.players);
+  });
+
   // Disconnection logic
   socket.on("disconnect", () => {
     for (const code in games) {
