@@ -30,9 +30,9 @@ io.on("connection", (socket) => {
   // Create game logic
   socket.on("createGame", () => {
     // Generate a game code with letters and numbers and add that code to the games object
-    const code = Math.random().toString(36).substring(2, 7).toUpperCase();
+    const code = Math.random().toString(36).substring(2, 9).toUpperCase();
 
-    games[code] = { players: [], started: false };
+    games[code] = { players: [], started: false, host: null };
 
     // Join the game and emit that the game (with the code) has been created
     socket.join(code)
@@ -46,6 +46,12 @@ io.on("connection", (socket) => {
     if (!game) {
       return socket.emit("errorMessage", "Game not found.");
     } 
+
+    // Create game host
+    if (game.host === null){
+      game.host = player.id;
+      io.to(code).emit("hostAssigned", game.host);
+    }
 
     // Check if the game has been started
     if (game.started) {
@@ -91,6 +97,20 @@ io.on("connection", (socket) => {
 
       game.players = game.players.filter(p => p.id !== socket.id);
       io.to(code).emit("playerListUpdate", game.players);
+    }
+  });
+
+  socket.on("isGameHost", ({ player, code }) => {
+    console.log(player, code);
+    const game = games[code];
+    if (!game) {
+      return socket.emit("errorMessage", "Game not found.");
+    }
+  
+    if (game.host === player) {
+      socket.emit("isHost");
+    } else {
+      socket.emit("notHost");
     }
   });
 

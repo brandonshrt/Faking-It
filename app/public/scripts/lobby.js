@@ -4,12 +4,15 @@ const socket = io();
 const urlParams = new URLSearchParams(window.location.search);
 const gameCode = urlParams.get("code") || localStorage.getItem("gameCode");
 const playerName = localStorage.getItem("playerName");
+const playerId = localStorage.getItem("playerId");
 const playerAvatar = localStorage.getItem("playerAvatar");
 
 // UI elements
 const playerGrid = document.getElementById("playerGrid");
 const lobbyTitle = document.getElementById("lobbyTitle");
 const startGameBtn = document.getElementById("startGameBtn");
+
+let hostId = null;
 
 window.addEventListener("load", () => {
     // Request the current lobby state when the page loads
@@ -63,9 +66,20 @@ function displayLobby(players) {
 }
 
 // Start game button (you can expand later)
+// Check if the person is the host, if not "Only host can start the game" or make it so only the host has a button
+// If host starts, go to game.html for all players
 startGameBtn.addEventListener("click", () => {
-  socket.emit("startGame", { code: gameCode });
-  alert("Game starting soon!");
+  socket.emit("isGameHost", {player: playerId, code: gameCode});
+
+  socket.on("notHost", () => {
+    alert("Only the host can start the game!");
+    return;
+  });
+
+  socket.on("isHost", () => {
+    socket.emit("startGame", { code: gameCode });
+    alert("Game starting soon!");
+  });
 });
 
 // Handle server errors
