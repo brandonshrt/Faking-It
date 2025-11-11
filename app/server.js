@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
     } 
 
     // Add player to game
-    game.players.push({ socketId: socket.id, ...player });
+    game.players.push({ socketId: socket.id, ...player, points: 0 });
     socket.join(code);
 
     // Emit that the play was added to the player list
@@ -101,7 +101,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("isGameHost", ({ player, code }) => {
-    console.log(player, code);
+    //console.log(player, code);
     const game = games[code];
     if (!game) {
       return socket.emit("errorMessage", "Game not found.");
@@ -112,6 +112,21 @@ io.on("connection", (socket) => {
     } else {
       socket.emit("notHost");
     }
+  });
+
+  socket.on("startGame", ({ code, playerId }) => {
+    const game = games[code];
+    if (!game) return socket.emit("errorMessage", "Game not found.");
+
+    // Only the host can start
+    if (game.host !== playerId) {
+      return socket.emit("errorMessage", "Only the host can start the game!");
+    }
+
+    game.started = true;
+
+    // Notify all players in the room
+    io.to(code).emit("gameStarted", { code });
   });
 
 });

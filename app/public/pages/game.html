@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Faking It - Game</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="game-shell">
+    <header class="game-header">
+      <h2 id="roundLabel">Round 0</h2>
+      <div id="clock" class="clock">00:00</div>
+    </header>
+
+    <main class="game-panel">
+      <aside class="player-column">
+        <ul id="leftPlayerList" class="player-list"></ul>
+      </aside>
+
+      <section class="center-panel">
+        <div id="flashcard" class="flashcard">
+          <div id="questionText">Waiting for next round...</div>
+          <div id="answerArea" class="answer-area">
+            <input id="answerInput" placeholder="Type your answer here" />
+            <button id="submitAnswerBtn" class="button">Submit</button>
+          </div>
+          <div id="afterAnswer" style="display:none;">
+            <p>Waiting for others...</p>
+          </div>
+        </div>
+
+        <div id="revealArea" class="reveal-area" style="display:none;">
+          <h3>Answers</h3>
+          <div id="answersList"></div>
+          <div id="votingArea" style="display:none;">
+            <h4>Vote who is the faker</h4>
+            <form id="voteForm"></form>
+            <button id="submitVoteBtn" class="button">Submit Vote</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-summary">
+        <div id="roundInfo"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../scripts/game.js"></script>
+</body>
+</html>

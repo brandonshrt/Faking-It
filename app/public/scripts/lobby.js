@@ -66,20 +66,12 @@ function displayLobby(players) {
 }
 
 // Start game button (you can expand later)
-// Check if the person is the host, if not "Only host can start the game" or make it so only the host has a button
-// If host starts, go to game.html for all players
 startGameBtn.addEventListener("click", () => {
-  socket.emit("isGameHost", {player: playerId, code: gameCode});
+  socket.emit("startGame", { code: gameCode, playerId });
+});
 
-  socket.on("notHost", () => {
-    alert("Only the host can start the game!");
-    return;
-  });
-
-  socket.on("isHost", () => {
-    socket.emit("startGame", { code: gameCode });
-    alert("Game starting soon!");
-  });
+socket.on("gameStarted", ({ code }) => {
+  window.location.href = `/pages/game.html?code=${code}`;
 });
 
 // Handle server errors
