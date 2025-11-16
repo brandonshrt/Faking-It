@@ -4,9 +4,13 @@ import http from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load questions
+const questionsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../app/data/questions.json'), 'utf-8'));
 
 // Instantiate express and create the Socket IO server
 const app = express();
@@ -23,16 +27,63 @@ app.get("/", (req, res) => {
 // Games storage
 const games = {};
 
+// Helper function to reveal answers
+function revealAnswers(code) {
+  const game = games[code];
+  if (!game) return;
+
+  // Build answers array with player info
+  const answersArray = game.players.map(player => ({
+    id: player.id,
+    name: player.name,
+    answer: game.answers[player.id] || null
+  }));
+
+  // Calculate majority answer (most common non-null answer)
+  const answerCounts = {};
+  answersArray.forEach(a => {
+    if (a.answer) {
+      answerCounts[a.answer] = (answerCounts[a.answer] || 0) + 1;
+    }
+  });
+
+  let majority = null;
+  let maxCount = 0;
+  for (const [answer, count] of Object.entries(answerCounts)) {
+    if (count > maxCount) {
+      maxCount = count;
+      majority = answer;
+    }
+  }
+
+  console.log(`Game ${code}: Revealing answers. Majority: "${majority}"`);
+
+  // Send answers to all players
+  io.to(code).emit("revealAnswers", {
+    answers: answersArray,
+    majority: majority,
+    deliberationTimeMs: 30000
+  });
+}
+
 // Connection logic
 io.on("connection", (socket) => {
   console.dir(games, { depth: null });
-  
+
   // Create game logic
   socket.on("createGame", () => {
     // Generate a game code with letters and numbers and add that code to the games object
     const code = Math.random().toString(36).substring(2, 9).toUpperCase();
 
-    games[code] = { players: [], started: false, host: null };
+    games[code] = {
+      players: [],
+      started: false,
+      host: null,
+      currentQuestion: null,
+      fakerId: null,
+      answers: {},
+      votes: {}
+    };
 
     // Join the game and emit that the game (with the code) has been created
     socket.join(code)
@@ -45,7 +96,7 @@ io.on("connection", (socket) => {
     const game = games[code];
     if (!game) {
       return socket.emit("errorMessage", "Game not found.");
-    } 
+    }
 
     // Create game host
     if (game.host === null){
@@ -56,7 +107,7 @@ io.on("connection", (socket) => {
     // Check if the game has been started
     if (game.started) {
       return socket.emit("errorMessage", "Game has already started.");
-    } 
+    }
 
     // Add player to game
     game.players.push({ socketId: socket.id, ...player, points: 0 });
@@ -70,7 +121,7 @@ io.on("connection", (socket) => {
     const game = games[code];
     if (game && !game.started) {
       socket.emit("gameCodeValid", code);
-    } 
+    }
     else socket.emit("errorMessage", "Invalid or already started game.");
   });
 
@@ -78,10 +129,10 @@ io.on("connection", (socket) => {
   socket.on("joinLobby", ({ code }) => {
     const game = games[code];
     if (!game) return socket.emit("errorMessage", "Lobby not found.");
-    
+
     // Join the socket to the room so it gets future updates too
     socket.join(code);
-    
+
     // Send the current player list only to this client
     socket.emit("lobbyState", game.players);
   });
@@ -106,11 +157,39 @@ io.on("connection", (socket) => {
     if (!game) {
       return socket.emit("errorMessage", "Game not found.");
     }
-  
+
     if (game.host === player) {
       socket.emit("isHost");
     } else {
       socket.emit("notHost");
+    }
+  });
+
+  // When a player loads game.html, they join the game room
+  socket.on("joinGameRoom", ({ code, playerId }) => {
+    const game = games[code];
+    if (!game) return socket.emit("errorMessage", "Game not found.");
+
+    socket.join(code);
+
+    // Update the player's socketId (in case they reconnected)
+    const player = game.players.find(p => p.id === playerId);
+    if (player) {
+      player.socketId = socket.id;
+      console.log(`Player ${player.name} joined game room ${code}`);
+    }
+
+    // Send current players list
+    socket.emit("updatePlayers", game.players);
+
+    // If game already started and question is active, send it to this player
+    if (game.started && game.currentQuestion) {
+      const question = playerId === game.fakerId ? game.currentQuestion[1] : game.currentQuestion[0];
+      socket.emit("roundQuestion", {
+        round: 1,
+        question: question,
+        timeMs: 30000
+      });
     }
   });
 
@@ -125,8 +204,67 @@ io.on("connection", (socket) => {
 
     game.started = true;
 
-    // Notify all players in the room
+    // Pick a random Round 1 question
+    const round1Questions = questionsData.round1;
+    const randomIndex = Math.floor(Math.random() * round1Questions.length);
+    const questionPair = round1Questions[randomIndex]; // [realQ, fakerQ]
+
+    game.currentQuestion = questionPair;
+
+    // Pick a random player to be the faker
+    const randomPlayerIndex = Math.floor(Math.random() * game.players.length);
+    const faker = game.players[randomPlayerIndex];
+    game.fakerId = faker.id;
+
+    console.log(`Game ${code}: Faker is ${faker.name} (${faker.id})`);
+    console.log(`Game ${code}: Real question: "${questionPair[0]}"`);
+    console.log(`Game ${code}: Faker question: "${questionPair[1]}"`);
+
+    // Reset answers
+    game.answers = {};
+
+    // Send different questions to each player
+    game.players.forEach(player => {
+      const playerSocket = io.sockets.sockets.get(player.socketId);
+      if (playerSocket) {
+        const question = player.id === game.fakerId ? questionPair[1] : questionPair[0];
+        playerSocket.emit("roundQuestion", {
+          round: 1,
+          question: question,
+          timeMs: 30000 // 30 seconds to answer
+        });
+      }
+    });
+
+    // Start answer timer (30 seconds)
+    game.answerTimer = setTimeout(() => {
+      console.log(`Game ${code}: Answer time expired!`);
+      revealAnswers(code);
+    }, 30000);
+
+    // Also notify everyone the game started
     io.to(code).emit("gameStarted", { code });
+  });
+
+  // Collect player answers
+  socket.on("submitAnswer", ({ code, playerId, answer }) => {
+    const game = games[code];
+    if (!game) return socket.emit("errorMessage", "Game not found.");
+
+    // Store the answer
+    game.answers[playerId] = answer;
+    console.log(`Game ${code}: Player answered: "${answer}"`);
+
+    // Check if everyone has answered
+    const answeredCount = Object.keys(game.answers).length;
+    console.log(`Game ${code}: ${answeredCount}/${game.players.length} players answered`);
+
+    if (answeredCount === game.players.length) {
+      // Everyone answered! Clear timer and reveal
+      clearTimeout(game.answerTimer);
+      console.log(`Game ${code}: All players answered, revealing now!`);
+      revealAnswers(code);
+    }
   });
 
 });
