@@ -7,44 +7,71 @@
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-  <div class="game-shell">
+  <div class="game-container">
+    <!-- Header -->
     <header class="game-header">
-      <h2 id="roundLabel">Round 0</h2>
-      <div id="clock" class="clock">00:00</div>
+      <div class="header-left">
+        <h2 id="roundLabel">Round 1</h2>
+        <span id="gameCode" class="game-code-display"></span>
+      </div>
+      <div class="timer-container">
+        <svg class="timer-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span id="clock" class="clock">30s</span>
+      </div>
     </header>
 
-    <main class="game-panel">
-      <aside class="player-column">
+    <div class="game-layout">
+      <!-- Players Sidebar -->
+      <aside class="players-sidebar">
+        <h3 class="sidebar-title">Players</h3>
         <ul id="leftPlayerList" class="player-list"></ul>
       </aside>
 
-      <section class="center-panel">
-        <div id="flashcard" class="flashcard">
-          <div id="questionText">Waiting for next round...</div>
-          <div id="answerArea" class="answer-area">
-            <input id="answerInput" placeholder="Type your answer here" />
-            <button id="submitAnswerBtn" class="button">Submit</button>
-          </div>
-          <div id="afterAnswer" style="display:none;">
-            <p>Waiting for others...</p>
-          </div>
+      <!-- Main Game Area -->
+      <main class="game-main">
+        <!-- Question Card -->
+        <div id="questionCard" class="question-card">
+          <div class="card-label">Your Question</div>
+          <div id="questionText" class="question-text">Waiting for next round...</div>
         </div>
 
-        <div id="revealArea" class="reveal-area" style="display:none;">
-          <h3>Answers</h3>
-          <div id="answersList"></div>
-          <div id="votingArea" style="display:none;">
-            <h4>Vote who is the faker</h4>
-            <form id="voteForm"></form>
-            <button id="submitVoteBtn" class="button">Submit Vote</button>
+        <!-- Answer Input Area -->
+        <div id="answerArea" class="answer-section">
+          <input
+            id="answerInput"
+            class="answer-input"
+            placeholder="Type your answer here..."
+            maxlength="100"
+          />
+          <button id="submitAnswerBtn" class="button submit-btn">Submit Answer</button>
+        </div>
+
+        <!-- Waiting State -->
+        <div id="afterAnswer" class="waiting-state" style="display:none;">
+          <div class="waiting-spinner"></div>
+          <p>Waiting for others to answer...</p>
+        </div>
+
+        <!-- Reveal Area -->
+        <div id="revealArea" class="reveal-section" style="display:none;">
+          <h3 class="section-title">Everyone's Answers</h3>
+          <div id="answersList" class="answers-list"></div>
+
+          <!-- Voting Area -->
+          <div id="votingArea" class="voting-section" style="display:none;">
+            <div class="voting-header">
+              <h4>Who is the Faker?</h4>
+              <p class="voting-subtitle">Discuss and vote carefully!</p>
+            </div>
+            <form id="voteForm" class="vote-form"></form>
+            <button id="submitVoteBtn" class="button vote-btn">Cast Your Vote</button>
           </div>
         </div>
-      </section>
-
-      <aside class="right-summary">
-        <div id="roundInfo"></div>
-      </aside>
-    </main>
+      </main>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
