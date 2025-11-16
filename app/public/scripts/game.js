@@ -9,6 +9,7 @@ const playerName = localStorage.getItem("playerName");
 
 // UI refs
 const roundLabel = document.getElementById("roundLabel");
+const gameCodeDisplay = document.getElementById("gameCode");
 const clock = document.getElementById("clock");
 const leftPlayerList = document.getElementById("leftPlayerList");
 const questionText = document.getElementById("questionText");
@@ -23,6 +24,11 @@ const submitVoteBtn = document.getElementById("submitVoteBtn");
 
 let roundTimer; // client-side countdown
 let remainingMs = 0;
+
+// Display game code in header
+if (gameCodeDisplay && code) {
+  gameCodeDisplay.textContent = code;
+}
 
 // join game room so server sends updates
 socket.emit("joinGameRoom", { code, playerId });
@@ -42,7 +48,7 @@ socket.on("roundQuestion", ({ round, question, timeMs }) => {
   answerInput.disabled = false;
   submitAnswerBtn.disabled = false;
   afterAnswer.style.display = "none";
-  document.getElementById("answerArea").style.display = "block";
+  document.getElementById("answerArea").style.display = "flex";
   remainingMs = timeMs;
   startClientCountdown(timeMs);
 });
@@ -142,9 +148,11 @@ function renderPlayersSide(players) {
     const li = document.createElement("li");
     li.className = "player-card";
     li.innerHTML = `
-      <div class="player-icon"><img src="../assets/icons/${p.avatar}.png" /></div>
-      <div class="player-meta"><div class="player-name">${p.name}</div>
-      <div class="player-points">${p.points || 0} pts</div></div>
+      <img src="../assets/icons/${p.avatar}.png" class="avatar-img" />
+      <div class="player-meta">
+        <div class="player-name">${p.name}</div>
+        <div class="player-points">${p.points || 0} pts</div>
+      </div>
     `;
     leftPlayerList.appendChild(li);
   });
