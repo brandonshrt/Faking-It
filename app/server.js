@@ -128,6 +128,31 @@ io.on("connection", (socket) => {
     // Notify all players in the room
     io.to(code).emit("gameStarted", { code });
   });
+  
+  socket.on("chatMessage", ({ code, name, text }) => {
+    const game = games[code];
+    if (!game) return;
+
+    io.to(code).emit("chatMessage", { name, text });
+  });
+
+  socket.on("joinGameRoom", ({ code, playerId }) => {
+    const game = games[code];
+    if (!game) {
+      return socket.emit("errorMessage", "Game not found.");
+    }
+
+    const player = game.players.find(p => p.id === playerId);
+    if (!player) {
+      return socket.emit("errorMessage", "Player not in this game.");
+    }
+
+    // put this socket in the room for this game
+    socket.join(code);
+
+    // send current players back so game.js can render them
+    socket.emit("updatePlayers", game.players);
+  });
 
 });
 
