@@ -154,12 +154,14 @@ p {
   }
   
   .player-card {
-    background-color: #f8f8f8;
+    background-color: #222836;
     border-radius: 12px;
     text-align: center;
     padding: 1rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
+    width: 260px;
+    margin: 10px auto;
   }
   
   .player-card:hover {
@@ -182,8 +184,10 @@ p {
   .player-name {
     font-size: 1.1rem;
     font-weight: bold;
-    color: #333;
+    color: #fff;
   }
+
+  /* ==== In-game chat box ==== */
 
 .chat-container {
   position: fixed;
@@ -229,4 +233,23 @@ p {
   color: white;
   font-weight: bold;
   font-size: 14px;
+}
+
+.player-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.player-icon img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.player-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
 }
