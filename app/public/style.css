@@ -154,12 +154,14 @@ p {
   }
 
   .player-card {
-    background-color: #f8f8f8;
+    background-color: #222836;
     border-radius: 12px;
     text-align: center;
     padding: 1rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
+    width: 260px;
+    margin: 10px auto;
   }
 
   .player-card:hover {

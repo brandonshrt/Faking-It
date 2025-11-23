@@ -7,6 +7,68 @@ const code = params.get("code") || localStorage.getItem("gameCode");
 const playerId = localStorage.getItem("playerId");
 const playerName = localStorage.getItem("playerName");
 
+// Chat elements
+const chatInput = document.getElementsByClassName("chat-input")[0];
+const chatSend = document.getElementsByClassName("chat-send")[0];
+const chatMessages = document.getElementsByClassName("chat-messages")[0];
+
+// Colors to rotate through for player names
+const nameColors = [
+  "#4caf50", // green
+  "#ff9800", // orange
+  "#03a9f4", // blue
+  "#e91e63", // pink
+  "#9c27b0", // purple
+  "#fff176", // yellow
+  "#f44336"  // red
+];
+
+// Store mapping: player name -> color
+const playerColors = {};
+
+// Show one chat message in the chat box
+function addChatMessage(name, text) {
+  // Assign a color if this name doesn't have one yet
+  if (!playerColors[name]) {
+    const colorIndex = Object.keys(playerColors).length % nameColors.length;
+    playerColors[name] = nameColors[colorIndex];
+  }
+
+  const color = playerColors[name];
+
+  const div = document.createElement("div");
+  div.innerHTML =
+    "<span style='color:" + color + "; font-weight:bold;'>" +
+    name + ":</span> " + text;
+
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight; // auto-scroll to bottom
+}
+
+// Send the current input as a chat message
+function sendChatMessage() {
+  const text = chatInput.value.trim();
+  if (text === "") return;
+
+  socket.emit("chatMessage", {
+    code: code,          // game room code from top of file
+    name: playerName,    // from localStorage at top of file
+    text: text
+  });
+
+  chatInput.value = "";
+}
+
+// Send when clicking the button
+chatSend.addEventListener("click", sendChatMessage);
+
+// Send when pressing Enter inside the input
+chatInput.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    sendChatMessage();
+  }
+});
+
 // UI refs
 const roundLabel = document.getElementById("roundLabel");
 const gameCodeDisplay = document.getElementById("gameCode");
@@ -36,6 +98,10 @@ socket.emit("joinGameRoom", { code, playerId });
 // update players shown in left column
 socket.on("updatePlayers", (players) => {
   renderPlayersSide(players);
+});
+
+socket.on("chatMessage", (msg) => {
+  addChatMessage(msg.name, msg.text);
 });
 
 // When a new round begins, server sends question to this client individually
