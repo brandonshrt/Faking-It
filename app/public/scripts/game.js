@@ -119,17 +119,18 @@ submitVoteBtn.addEventListener("click", () => {
 });
 
 // show final vote results and highlight cards
-socket.on("voteResults", ({ voteCounts, topId, fakerId, players }) => {
+socket.on("voteResults", ({ voteCounts, topId, topName, fakerId, fakerName, players }) => {
+  console.log("Vote Results Received:", { topId, topName, fakerId, fakerName });
+
   // highlight left sidebar players
   // players is array with points included
   renderPlayersSide(players);
 
-  // highlight cards: green if voted correctly, red if incorrectly — we'll show per-voter feedback
   // Show a summary below answersList
   const result = document.createElement("div");
   result.innerHTML = `<h4>Vote results</h4>
-    <p>Player with most votes: ${topId || "nobody"}</p>
-    <p>Faker: ${fakerId}</p>`;
+    <p>Player with most votes: ${topName || "nobody"}</p>
+    <p>Faker: ${fakerName}</p>`;
   answersList.appendChild(result);
 
   // reset voting UI

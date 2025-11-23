@@ -64,6 +64,54 @@ function revealAnswers(code) {
     majority: majority,
     deliberationTimeMs: 30000
   });
+
+  // Reset votes for new voting round
+  game.votes = {};
+
+  // Start voting timer (30 seconds)
+  game.votingTimer = setTimeout(() => {
+    console.log(`Game ${code}: Voting time expired!`);
+    showResults(code);
+  }, 30000);
+}
+
+// Helper function to show voting results
+function showResults(code) {
+  const game = games[code];
+  if (!game) return;
+
+  // Count votes
+  const voteCounts = {};
+  for (const voterId in game.votes) {
+    const votedForId = game.votes[voterId];
+    voteCounts[votedForId] = (voteCounts[votedForId] || 0) + 1;
+  }
+
+  // Find who got most votes
+  let topId = null;
+  let maxVotes = 0;
+  for (const [playerId, count] of Object.entries(voteCounts)) {
+    if (count > maxVotes) {
+      maxVotes = count;
+      topId = playerId;
+    }
+  }
+
+  console.log(`Game ${code}: Most voted: ${topId}, Faker was: ${game.fakerId}`);
+
+  // Find player names
+  const topPlayer = game.players.find(p => p.id === topId);
+  const fakerPlayer = game.players.find(p => p.id === game.fakerId);
+
+  // Send results to all players
+  io.to(code).emit("voteResults", {
+    voteCounts: voteCounts,
+    topId: topId,
+    topName: topPlayer ? topPlayer.name : "nobody",
+    fakerId: game.fakerId,
+    fakerName: fakerPlayer ? fakerPlayer.name : "unknown",
+    players: game.players
+  });
 }
 
 // Connection logic
@@ -227,7 +275,12 @@ io.on("connection", (socket) => {
     game.players.forEach(player => {
       const playerSocket = io.sockets.sockets.get(player.socketId);
       if (playerSocket) {
-        const question = player.id === game.fakerId ? questionPair[1] : questionPair[0];
+        const isFaker = player.id === game.fakerId;
+        const question = isFaker ? questionPair[1] : questionPair[0];
+
+        console.log(`Game ${code}: Sending to ${player.name} (${player.id}): ${isFaker ? 'FAKER' : 'REAL'} question`);
+        console.log(`  → "${question}"`);
+
         playerSocket.emit("roundQuestion", {
           round: 1,
           question: question,
@@ -264,6 +317,27 @@ io.on("connection", (socket) => {
       clearTimeout(game.answerTimer);
       console.log(`Game ${code}: All players answered, revealing now!`);
       revealAnswers(code);
+    }
+  });
+
+  // Collect votes
+  socket.on("submitVote", ({ code, voterId, votedForId }) => {
+    const game = games[code];
+    if (!game) return socket.emit("errorMessage", "Game not found.");
+
+    // Store the vote
+    game.votes[voterId] = votedForId;
+    console.log(`Game ${code}: Player voted for ${votedForId}`);
+
+    // Check if everyone has voted
+    const votedCount = Object.keys(game.votes).length;
+    console.log(`Game ${code}: ${votedCount}/${game.players.length} players voted`);
+
+    if (votedCount === game.players.length) {
+      // Everyone voted! Clear timer and show results
+      clearTimeout(game.votingTimer);
+      console.log(`Game ${code}: All players voted, showing results!`);
+      showResults(code);
     }
   });
 
