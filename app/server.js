@@ -10,7 +10,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load questions
-const questionsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../app/data/questions.json'), 'utf-8'));
+const questionsData = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, "../app/data/questions.json"),
+    "utf-8"
+  )
+);
 
 // Instantiate express and create the Socket IO server
 const app = express();
@@ -33,15 +38,15 @@ function revealAnswers(code) {
   if (!game) return;
 
   // Build answers array with player info
-  const answersArray = game.players.map(player => ({
+  const answersArray = game.players.map((player) => ({
     id: player.id,
     name: player.name,
-    answer: game.answers[player.id] || null
+    answer: game.answers[player.id] || null,
   }));
 
-  // Calculate majority answer (most common non-null answer)
+  // Calculate majority answer
   const answerCounts = {};
-  answersArray.forEach(a => {
+  answersArray.forEach((a) => {
     if (a.answer) {
       answerCounts[a.answer] = (answerCounts[a.answer] || 0) + 1;
     }
@@ -62,55 +67,7 @@ function revealAnswers(code) {
   io.to(code).emit("revealAnswers", {
     answers: answersArray,
     majority: majority,
-    deliberationTimeMs: 30000
-  });
-
-  // Reset votes for new voting round
-  game.votes = {};
-
-  // Start voting timer (30 seconds)
-  game.votingTimer = setTimeout(() => {
-    console.log(`Game ${code}: Voting time expired!`);
-    showResults(code);
-  }, 30000);
-}
-
-// Helper function to show voting results
-function showResults(code) {
-  const game = games[code];
-  if (!game) return;
-
-  // Count votes
-  const voteCounts = {};
-  for (const voterId in game.votes) {
-    const votedForId = game.votes[voterId];
-    voteCounts[votedForId] = (voteCounts[votedForId] || 0) + 1;
-  }
-
-  // Find who got most votes
-  let topId = null;
-  let maxVotes = 0;
-  for (const [playerId, count] of Object.entries(voteCounts)) {
-    if (count > maxVotes) {
-      maxVotes = count;
-      topId = playerId;
-    }
-  }
-
-  console.log(`Game ${code}: Most voted: ${topId}, Faker was: ${game.fakerId}`);
-
-  // Find player names
-  const topPlayer = game.players.find(p => p.id === topId);
-  const fakerPlayer = game.players.find(p => p.id === game.fakerId);
-
-  // Send results to all players
-  io.to(code).emit("voteResults", {
-    voteCounts: voteCounts,
-    topId: topId,
-    topName: topPlayer ? topPlayer.name : "nobody",
-    fakerId: game.fakerId,
-    fakerName: fakerPlayer ? fakerPlayer.name : "unknown",
-    players: game.players
+    deliberationTimeMs: 30000,
   });
 }
 
@@ -130,11 +87,11 @@ io.on("connection", (socket) => {
       currentQuestion: null,
       fakerId: null,
       answers: {},
-      votes: {}
+      votes: {},
     };
 
     // Join the game and emit that the game (with the code) has been created
-    socket.join(code)
+    socket.join(code);
     socket.emit("gameCreated", { code });
   });
 
@@ -147,7 +104,7 @@ io.on("connection", (socket) => {
     }
 
     // Create game host
-    if (game.host === null){
+    if (game.host === null) {
       game.host = player.id;
       io.to(code).emit("hostAssigned", game.host);
     }
@@ -161,7 +118,7 @@ io.on("connection", (socket) => {
     game.players.push({ socketId: socket.id, ...player, points: 0 });
     socket.join(code);
 
-    // Emit that the play was added to the player list
+    // Emit that the player was added to the player list
     io.to(code).emit("playerListUpdate", game.players);
   });
 
@@ -169,8 +126,7 @@ io.on("connection", (socket) => {
     const game = games[code];
     if (game && !game.started) {
       socket.emit("gameCodeValid", code);
-    }
-    else socket.emit("errorMessage", "Invalid or already started game.");
+    } else socket.emit("errorMessage", "Invalid or already started game.");
   });
 
   // Display lobby logic
@@ -190,17 +146,16 @@ io.on("connection", (socket) => {
     for (const code in games) {
       const game = games[code];
 
-      if (!game){
+      if (!game) {
         continue;
       }
 
-      game.players = game.players.filter(p => p.id !== socket.id);
+      game.players = game.players.filter((p) => p.id !== socket.id);
       io.to(code).emit("playerListUpdate", game.players);
     }
   });
 
   socket.on("isGameHost", ({ player, code }) => {
-    //console.log(player, code);
     const game = games[code];
     if (!game) {
       return socket.emit("errorMessage", "Game not found.");
@@ -220,8 +175,8 @@ io.on("connection", (socket) => {
 
     socket.join(code);
 
-    // Update the player's socketId (in case they reconnected)
-    const player = game.players.find(p => p.id === playerId);
+    // Update the player's socketId in case they reconnected
+    const player = game.players.find((p) => p.id === playerId);
     if (player) {
       player.socketId = socket.id;
       console.log(`Player ${player.name} joined game room ${code}`);
@@ -232,11 +187,14 @@ io.on("connection", (socket) => {
 
     // If game already started and question is active, send it to this player
     if (game.started && game.currentQuestion) {
-      const question = playerId === game.fakerId ? game.currentQuestion[1] : game.currentQuestion[0];
+      const question =
+        playerId === game.fakerId
+          ? game.currentQuestion[1]
+          : game.currentQuestion[0];
       socket.emit("roundQuestion", {
         round: 1,
         question: question,
-        timeMs: 30000
+        timeMs: 30000,
       });
     }
   });
@@ -272,19 +230,15 @@ io.on("connection", (socket) => {
     game.answers = {};
 
     // Send different questions to each player
-    game.players.forEach(player => {
+    game.players.forEach((player) => {
       const playerSocket = io.sockets.sockets.get(player.socketId);
       if (playerSocket) {
-        const isFaker = player.id === game.fakerId;
-        const question = isFaker ? questionPair[1] : questionPair[0];
-
-        console.log(`Game ${code}: Sending to ${player.name} (${player.id}): ${isFaker ? 'FAKER' : 'REAL'} question`);
-        console.log(`  → "${question}"`);
-
+        const question =
+          player.id === game.fakerId ? questionPair[1] : questionPair[0];
         playerSocket.emit("roundQuestion", {
           round: 1,
           question: question,
-          timeMs: 30000 // 30 seconds to answer
+          timeMs: 30000, // 30 seconds to answer
         });
       }
     });
@@ -298,31 +252,6 @@ io.on("connection", (socket) => {
     // Also notify everyone the game started
     io.to(code).emit("gameStarted", { code });
   });
-  
-  socket.on("chatMessage", ({ code, name, text }) => {
-    const game = games[code];
-    if (!game) return;
-
-    io.to(code).emit("chatMessage", { name, text });
-  });
-
-  socket.on("joinGameRoom", ({ code, playerId }) => {
-    const game = games[code];
-    if (!game) {
-      return socket.emit("errorMessage", "Game not found.");
-    }
-
-    const player = game.players.find(p => p.id === playerId);
-    if (!player) {
-      return socket.emit("errorMessage", "Player not in this game.");
-    }
-
-    // put this socket in the room for this game
-    socket.join(code);
-
-    // send current players back so game.js can render them
-    socket.emit("updatePlayers", game.players);
-  });
 
   // Collect player answers
   socket.on("submitAnswer", ({ code, playerId, answer }) => {
@@ -335,7 +264,9 @@ io.on("connection", (socket) => {
 
     // Check if everyone has answered
     const answeredCount = Object.keys(game.answers).length;
-    console.log(`Game ${code}: ${answeredCount}/${game.players.length} players answered`);
+    console.log(
+      `Game ${code}: ${answeredCount}/${game.players.length} players answered`
+    );
 
     if (answeredCount === game.players.length) {
       // Everyone answered! Clear timer and reveal
@@ -345,29 +276,17 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Collect votes
-  socket.on("submitVote", ({ code, voterId, votedForId }) => {
+  // Chat backend
+  socket.on("chatMessage", ({ code, name, text }) => {
     const game = games[code];
-    if (!game) return socket.emit("errorMessage", "Game not found.");
+    if (!game) return;
 
-    // Store the vote
-    game.votes[voterId] = votedForId;
-    console.log(`Game ${code}: Player voted for ${votedForId}`);
-
-    // Check if everyone has voted
-    const votedCount = Object.keys(game.votes).length;
-    console.log(`Game ${code}: ${votedCount}/${game.players.length} players voted`);
-
-    if (votedCount === game.players.length) {
-      // Everyone voted! Clear timer and show results
-      clearTimeout(game.votingTimer);
-      console.log(`Game ${code}: All players voted, showing results!`);
-      showResults(code);
-    }
+    io.to(code).emit("chatMessage", { name, text });
   });
-
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}`)
+);
