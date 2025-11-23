@@ -71,6 +71,7 @@ chatInput.addEventListener("keypress", function (event) {
 
 // UI refs
 const roundLabel = document.getElementById("roundLabel");
+const gameCodeDisplay = document.getElementById("gameCode");
 const clock = document.getElementById("clock");
 const leftPlayerList = document.getElementById("leftPlayerList");
 const questionText = document.getElementById("questionText");
@@ -85,6 +86,11 @@ const submitVoteBtn = document.getElementById("submitVoteBtn");
 
 let roundTimer; // client-side countdown
 let remainingMs = 0;
+
+// Display game code in header
+if (gameCodeDisplay && code) {
+  gameCodeDisplay.textContent = code;
+}
 
 // join game room so server sends updates
 socket.emit("joinGameRoom", { code, playerId });
@@ -108,7 +114,7 @@ socket.on("roundQuestion", ({ round, question, timeMs }) => {
   answerInput.disabled = false;
   submitAnswerBtn.disabled = false;
   afterAnswer.style.display = "none";
-  document.getElementById("answerArea").style.display = "block";
+  document.getElementById("answerArea").style.display = "flex";
   remainingMs = timeMs;
   startClientCountdown(timeMs);
 });
@@ -179,17 +185,18 @@ submitVoteBtn.addEventListener("click", () => {
 });
 
 // show final vote results and highlight cards
-socket.on("voteResults", ({ voteCounts, topId, fakerId, players }) => {
+socket.on("voteResults", ({ voteCounts, topId, topName, fakerId, fakerName, players }) => {
+  console.log("Vote Results Received:", { topId, topName, fakerId, fakerName });
+
   // highlight left sidebar players
   // players is array with points included
   renderPlayersSide(players);
 
-  // highlight cards: green if voted correctly, red if incorrectly — we'll show per-voter feedback
   // Show a summary below answersList
   const result = document.createElement("div");
   result.innerHTML = `<h4>Vote results</h4>
-    <p>Player with most votes: ${topId || "nobody"}</p>
-    <p>Faker: ${fakerId}</p>`;
+    <p>Player with most votes: ${topName || "nobody"}</p>
+    <p>Faker: ${fakerName}</p>`;
   answersList.appendChild(result);
 
   // reset voting UI
@@ -208,9 +215,11 @@ function renderPlayersSide(players) {
     const li = document.createElement("li");
     li.className = "player-card";
     li.innerHTML = `
-      <div class="player-icon"><img src="../assets/icons/${p.avatar}.png" /></div>
-      <div class="player-meta"><div class="player-name">${p.name}</div>
-      <div class="player-points">${p.points || 0} pts</div></div>
+      <img src="../assets/icons/${p.avatar}.png" class="avatar-img" />
+      <div class="player-meta">
+        <div class="player-name">${p.name}</div>
+        <div class="player-points">${p.points || 0} pts</div>
+      </div>
     `;
     leftPlayerList.appendChild(li);
   });
