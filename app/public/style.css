@@ -664,3 +664,13 @@ p {
 .chat-send:hover {
   background-color: #00a8cc;
 }
+
+.container ul {
+    list-style-position: inside;
+    text-align: center;
+    padding-left: 0;
+}
+
+.container li {
+    color: white;
+}
