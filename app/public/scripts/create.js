@@ -13,7 +13,7 @@ socket.on("errorMessage", (msg) => {
 
 // Copy invite link to clipboard
 function copyLink() {
-  const link = `${window.location.origin}/join.html?code=${ localStorage.getItem("gameCode") }`;
+  const link = `${window.location.origin}/pages/join.html?code=${gameCode}`;
   navigator.clipboard.writeText(link);
   document.getElementById("createMessage").textContent = "Link copied to clipboard!";
 }
