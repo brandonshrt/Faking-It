@@ -194,7 +194,7 @@ io.on("connection", (socket) => {
         continue;
       }
 
-      game.players = game.players.filter(p => p.id !== socket.id);
+      game.players = game.players.filter(p => p.socketId !== socket.id);
       io.to(code).emit("playerListUpdate", game.players);
     }
   });
