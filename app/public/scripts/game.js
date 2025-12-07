@@ -8,9 +8,16 @@ const playerId = localStorage.getItem("playerId");
 const playerName = localStorage.getItem("playerName");
 
 // Chat elements
+const chatContainer = document.getElementsByClassName("chat-container")[0];
+const chatHeader = document.getElementsByClassName("chat-header")[0];
 const chatInput = document.getElementsByClassName("chat-input")[0];
 const chatSend = document.getElementsByClassName("chat-send")[0];
 const chatMessages = document.getElementsByClassName("chat-messages")[0];
+
+// Toggle chat collapse
+chatHeader.addEventListener("click", () => {
+  chatContainer.classList.toggle("collapsed");
+});
 
 // Colors to rotate through for player names
 const nameColors = [
@@ -20,7 +27,7 @@ const nameColors = [
   "#e91e63", // pink
   "#9c27b0", // purple
   "#fff176", // yellow
-  "#f44336"  // red
+  "#f44336", // red
 ];
 
 // Store mapping: player name -> color
@@ -38,8 +45,12 @@ function addChatMessage(name, text) {
 
   const div = document.createElement("div");
   div.innerHTML =
-    "<span style='color:" + color + "; font-weight:bold;'>" +
-    name + ":</span> " + text;
+    "<span style='color:" +
+    color +
+    "; font-weight:bold;'>" +
+    name +
+    ":</span> " +
+    text;
 
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight; // auto-scroll to bottom
@@ -51,9 +62,9 @@ function sendChatMessage() {
   if (text === "") return;
 
   socket.emit("chatMessage", {
-    code: code,          // game room code from top of file
-    name: playerName,    // from localStorage at top of file
-    text: text
+    code: code, // game room code from top of file
+    name: playerName, // from localStorage at top of file
+    text: text,
   });
 
   chatInput.value = "";
@@ -151,17 +162,19 @@ socket.on("revealAnswers", ({ answers, majority, deliberationTimeMs }) => {
   }
 
   // Show answers next to players
-  answers.forEach(a => {
+  answers.forEach((a) => {
     const el = document.createElement("div");
     el.classList.add("answer-entry");
-    el.innerHTML = `<strong>${a.name}:</strong> ${a.answer || "<i>(no answer)</i>"}`;
+    el.innerHTML = `<strong>${a.name}:</strong> ${
+      a.answer || "<i>(no answer)</i>"
+    }`;
     answersList.appendChild(el);
   });
 
   // prepare voting UI
   votingArea.style.display = "block";
   voteForm.innerHTML = "";
-  answers.forEach(a => {
+  answers.forEach((a) => {
     // create radio option
     const id = `vote_${a.id}`;
     const r = document.createElement("div");
@@ -185,25 +198,33 @@ submitVoteBtn.addEventListener("click", () => {
 });
 
 // show final vote results and highlight cards
-socket.on("voteResults", ({ voteCounts, topId, topName, fakerId, fakerName, players }) => {
-  console.log("Vote Results Received:", { topId, topName, fakerId, fakerName });
+socket.on(
+  "voteResults",
+  ({ voteCounts, topId, topName, fakerId, fakerName, players }) => {
+    console.log("Vote Results Received:", {
+      topId,
+      topName,
+      fakerId,
+      fakerName,
+    });
 
-  // highlight left sidebar players
-  // players is array with points included
-  renderPlayersSide(players);
+    // highlight left sidebar players
+    // players is array with points included
+    renderPlayersSide(players);
 
-  // Show a summary below answersList
-  const result = document.createElement("div");
-  result.innerHTML = `<h4>Vote results</h4>
+    // Show a summary below answersList
+    const result = document.createElement("div");
+    result.innerHTML = `<h4>Vote results</h4>
     <p>Player with most votes: ${topName || "nobody"}</p>
     <p>Faker: ${fakerName}</p>`;
-  answersList.appendChild(result);
+    answersList.appendChild(result);
 
-  // reset voting UI
-  votingArea.style.display = "none";
-  submitVoteBtn.disabled = false;
-  submitVoteBtn.textContent = "Submit Vote";
-});
+    // reset voting UI
+    votingArea.style.display = "none";
+    submitVoteBtn.disabled = false;
+    submitVoteBtn.textContent = "Submit Vote";
+  }
+);
 
 // generic error
 socket.on("errorMessage", (msg) => alert(msg));
@@ -211,7 +232,7 @@ socket.on("errorMessage", (msg) => alert(msg));
 // util: render players in left column (show points)
 function renderPlayersSide(players) {
   leftPlayerList.innerHTML = "";
-  players.forEach(p => {
+  players.forEach((p) => {
     const li = document.createElement("li");
     li.className = "player-card";
     li.innerHTML = `
