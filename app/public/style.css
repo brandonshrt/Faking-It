@@ -296,6 +296,8 @@ p {
   padding: 12px;
   border-radius: 10px;
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .player-list .player-card:hover {
