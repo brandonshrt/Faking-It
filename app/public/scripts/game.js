@@ -11,6 +11,8 @@ const playerName = localStorage.getItem("playerName");
 const chatInput = document.getElementsByClassName("chat-input")[0];
 const chatSend = document.getElementsByClassName("chat-send")[0];
 const chatMessages = document.getElementsByClassName("chat-messages")[0];
+const chatContainer = document.getElementsByClassName("chat-container")[0];
+const chatCollapseBtn = document.getElementsByClassName("chat-collapse-btn")[0];
 
 // Colors to rotate through for player names
 const nameColors = [
@@ -239,3 +241,9 @@ function startClientCountdown(ms) {
     }
   }, 200);
 }
+
+// Chat collapse functionality
+chatCollapseBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("collapsed");
+  chatCollapseBtn.textContent = chatContainer.classList.contains("collapsed") ? "+" : "−";
+});
