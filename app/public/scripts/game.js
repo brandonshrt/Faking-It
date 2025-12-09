@@ -14,10 +14,20 @@ const chatInput = document.getElementsByClassName("chat-input")[0];
 const chatSend = document.getElementsByClassName("chat-send")[0];
 const chatMessages = document.getElementsByClassName("chat-messages")[0];
 
-// Toggle chat collapse
-chatHeader.addEventListener("click", () => {
-  chatContainer.classList.toggle("collapsed");
-});
+// UI refs
+const roundLabel = document.getElementById("roundLabel");
+const gameCodeDisplay = document.getElementById("gameCode");
+const clock = document.getElementById("clock");
+const leftPlayerList = document.getElementById("leftPlayerList");
+const questionText = document.getElementById("questionText");
+const answerInput = document.getElementById("answerInput");
+const submitAnswerBtn = document.getElementById("submitAnswerBtn");
+const afterAnswer = document.getElementById("afterAnswer");
+const revealArea = document.getElementById("revealArea");
+const answersList = document.getElementById("answersList");
+const votingArea = document.getElementById("votingArea");
+const voteForm = document.getElementById("voteForm");
+const submitVoteBtn = document.getElementById("submitVoteBtn");
 
 // Colors to rotate through for player names
 const nameColors = [
@@ -80,20 +90,10 @@ chatInput.addEventListener("keypress", function (event) {
   }
 });
 
-// UI refs
-const roundLabel = document.getElementById("roundLabel");
-const gameCodeDisplay = document.getElementById("gameCode");
-const clock = document.getElementById("clock");
-const leftPlayerList = document.getElementById("leftPlayerList");
-const questionText = document.getElementById("questionText");
-const answerInput = document.getElementById("answerInput");
-const submitAnswerBtn = document.getElementById("submitAnswerBtn");
-const afterAnswer = document.getElementById("afterAnswer");
-const revealArea = document.getElementById("revealArea");
-const answersList = document.getElementById("answersList");
-const votingArea = document.getElementById("votingArea");
-const voteForm = document.getElementById("voteForm");
-const submitVoteBtn = document.getElementById("submitVoteBtn");
+// Toggle chat collapse
+chatHeader.addEventListener("click", () => {
+  chatContainer.classList.toggle("collapsed");
+});
 
 let roundTimer; // client-side countdown
 let remainingMs = 0;
