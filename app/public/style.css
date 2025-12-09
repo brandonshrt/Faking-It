@@ -42,29 +42,31 @@ p {
 
 /* Buttons */
 .button {
-    background-color: #00d4ff;
-    color: #1a1a2e;
-    padding: 15px 40px;
-    font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 10px;
-    font-weight: bold;
-    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+  background-color: #00d4ff;
+  color: #1a1a2e;
+  padding: 15px 40px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px;
+  font-weight: bold;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
 .button:hover {
-    background-color: #00a8cc;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  animation: float 1s ease-in-out infinite alternate;
+  transform: scale(1.1);
 }
 
 .button:active {
-    background-color: #009fbb;
+  background-color: #009fbb;
 }
 
 .button-container {
-    margin-top: 40px;
+  margin-top: 40px;
 }
 
 /* Avatar Selection Page */
@@ -91,9 +93,10 @@ p {
 
 .avatar-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* Creates 3 equal-width columns */
+    grid-template-rows: repeat(3, 1fr); 
     gap: 20px;
-    max-width: 600px;
+    max-width: 400px;
     margin: 40px auto;
     padding: 0 20px;
 }
@@ -120,12 +123,6 @@ p {
     margin: 0 auto;
     transition: all 0.3s;
     overflow: hidden;
-}
-
-.avatar-img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
 }
 
 .avatar-option.selected .avatar-circle {
@@ -178,7 +175,6 @@ p {
     height: 80px;
     object-fit: cover;
     border-radius: 50%;
-    margin-bottom: 0.5rem;
   }
 
   .player-name {
