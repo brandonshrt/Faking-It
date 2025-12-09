@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Results</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+<nav>
+    <a href="/pages/index.html">Home</a>
+</nav>
+
+<div class="container">
+    <h1 id="winner-title">Winner!</h1>
+
+    <div id="leaderboard" class="player-grid"></div>
+
+    <div class="button-container">
+        <button id="home-btn" class="button">Back to Home</button>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="../scripts/victory.js"></script>
+</body>
+</html>

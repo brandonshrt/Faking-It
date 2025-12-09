@@ -226,6 +226,15 @@ socket.on(
   }
 );
 
+socket.on("gameOver", ({ players, winner }) => {
+  // Save results so victory page can access them
+  sessionStorage.setItem("gameResults", JSON.stringify({ players, winner }));
+
+  // Redirect to victory page
+  window.location.href = "/pages/victory.html";
+});
+
+
 // generic error
 socket.on("errorMessage", (msg) => alert(msg));
 

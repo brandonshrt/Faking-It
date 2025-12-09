@@ -738,3 +738,40 @@ p {
 .container li {
     color: white;
 }
+
+.victory-container {
+  max-width: 500px;
+  margin: auto;
+}
+
+#winner-title {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+}
+
+.leaderboard {
+  margin-top: 20px;
+  text-align: left;
+  background: #2d2d2d;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.leaderboard-entry {
+  padding: 8px 0;
+  border-bottom: 1px solid #444;
+}
+
+.home-btn {
+  margin-top: 30px;
+  padding: 12px 25px;
+  font-size: 18px;
+  border-radius: 8px;
+  background: #00d4ff;
+  border: none;
+  cursor: pointer;
+}
+
+.home-btn:hover {
+  background: #00d4ff;;
+}
