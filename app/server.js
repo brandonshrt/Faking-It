@@ -191,7 +191,7 @@ function revealAnswers(code) {
   // Send answers to all players
   io.to(code).emit("revealAnswers", {
     answers: answersArray,
-    majority: majority,
+    majority: game.currentQuestion[0],
     deliberationTimeMs: 30000
   });
 

@@ -157,7 +157,7 @@ socket.on("revealAnswers", ({ answers, majority, deliberationTimeMs }) => {
   // Show majority suggestion
   if (majority) {
     const maj = document.createElement("p");
-    maj.innerHTML = `<strong>Majority answer:</strong> ${majority}`;
+    maj.innerHTML = `<strong>Question:</strong> ${majority}`;
     answersList.appendChild(maj);
   }
 
@@ -214,9 +214,9 @@ socket.on(
 
     // Show a summary below answersList
     const result = document.createElement("div");
-    result.innerHTML = `<h4>Vote results</h4>
-    <p>Player with most votes: ${topName || "nobody"}</p>
-    <p>Faker: ${fakerName}</p>`;
+    result.innerHTML = `<h2>Vote results</h4>
+    <h3>Player with most votes: ${topName || "nobody"}</h3>
+    <h3>Faker: ${fakerName}</h3>`;
     answersList.appendChild(result);
 
     // reset voting UI
