@@ -32,6 +32,34 @@ p {
   text-align: center;
 }
 
+.how-to-play-card {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #16213e;
+  padding: 25px 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  color: white;
+  line-height: 1.6;
+}
+
+.how-to-play-card h2,
+.how-to-play-card h3 {
+  margin-top: 10px;
+  color: #e0e0ff;
+}
+
+.how-to-play-card hr {
+  border: none;
+  border-bottom: 1px solid #2a3a6a;
+  margin: 20px 0;
+}
+
+.how-to-play-card ul {
+  padding-left: 20px;
+}
+
+
 /* ==================== NAVIGATION ==================== */
 
 nav {
@@ -170,7 +198,7 @@ nav a:hover {
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
-  width: 260px;
+  width: 200px;
   margin: 10px auto;
 }
 
@@ -193,7 +221,7 @@ nav a:hover {
 .player-name {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #333;
+  color: white;
 }
 
 /* ==================== GAME SCREEN ==================== */
@@ -311,7 +339,6 @@ nav a:hover {
   border: 2px solid #2a3f5f;
   padding: 12px;
   border-radius: 10px;
-  width: 100%;
   transition: 0.3s;
 }
 

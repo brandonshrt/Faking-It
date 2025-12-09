@@ -21,7 +21,62 @@
         <div class="button-container">
             <button class="button" onclick="createGame()">Create Game</button>
             <button class="button" onclick="goToJoin()">Join Game</button>
-          </div>
+        </div>
+    </div>
+
+    <!-- How to Play Card -->
+    <div class="how-to-play-card">
+        <h2>How to Play</h2>
+
+        <p><strong>Faking It</strong> is a game where players try to expose the Faker — the only person who didn’t receive the real question.</p>
+
+        <hr>
+
+        <h3>Setup</h3>
+        <ul>
+            <li>3–8 players (best with 4–6)</li>
+            <li>One device per player or shared screen</li>
+            <li>3 rounds, 3 questions per round</li>
+            <li>Each question has a new Faker</li>
+        </ul>
+
+        <h3>Round 1: Random Topics</h3>
+        <p><em>Everyone answers the same question — except the Faker gets a twist.</em></p>
+
+        <ul>
+            <li><strong>Real Players:</strong> Answer the real question  
+                <br>Example: “Who makes the best music?” → “Taylor Swift”</li>
+            <li><strong>Faker:</strong> Answers a different (related) question  
+                <br>Example: “Name a musician who's never won a Grammy.” → “Nicki Minaj”</li>
+        </ul>
+
+        <h3>Round 2: About the Group</h3>
+        <p><em>Real players answer a question about someone in the room — the Faker must pretend they know what the question was.</em></p>
+
+        <ul>
+            <li><strong>Real Players:</strong> “Who here has the most money?” → “Sarah!”</li>
+            <li><strong>Faker:</strong> Answers a different question with a name  
+                <br>“Who here would need help paying rent?” → “Probably Alex”</li>
+        </ul>
+
+        <h3>Round 3: Numbers</h3>
+        <p><em>Everyone gives a number — but the Faker’s question is unrelated.</em></p>
+
+        <ul>
+            <li><strong>Real Players:</strong> “How many times have you cried in the last month?” → “3”</li>
+            <li><strong>Faker:</strong> “How many texts have you gotten today?” → “47”</li>
+        </ul>
+
+        <h3>Voting & Scoring</h3>
+        <ul>
+            <li>30-second discussion</li>
+            <li>Everyone votes for the Faker</li>
+            <li><strong>If Faker is caught:</strong> Real players +1 each</li>
+            <li><strong>If Faker survives:</strong> Faker +2</li>
+            <li>After 3 rounds → highest score wins</li>
+        </ul>
+
+        <p><strong>Have fun, lie convincingly, and may the best bluffer win!</strong></p>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
